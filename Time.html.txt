@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Time Clock System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .share-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .share-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .current-time {
+            background-color: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        
+        .main-content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+        
+        .employee-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .input-group input, .input-group select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .clock-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .clock-btn {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .clock-in-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .clock-in-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .clock-out-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .clock-out-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .status-indicator {
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .clocked-out {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .clocked-in {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .location-info {
+            background-color: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .history-section h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .history-table th {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .history-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .history-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .empty-history {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .export-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .export-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .employee-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .employee-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .employee-item:last-child {
+            border-bottom: none;
+        }
+        
+        .employee-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-clocked-in {
+            background-color: #2ecc71;
+        }
+        
+        .status-clocked-out {
+            background-color: #e74c3c;
+        }
+        
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .share-modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .share-modal h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .share-link {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .share-link input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .copy-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .close-modal {
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid #3498db;
+            color: #3498db;
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Employee Time Clock System</h1>
+            <div class="share-buttons">
+                <button class="share-btn" id="shareAppBtn">Share App</button>
+                <button class="share-btn" id="viewAllEmployeesBtn">View All Employees</button>
+            </div>
+        </header>
+        
+        <div class="current-time" id="currentTime">
+            Loading...
+        </div>
+        
+        <div class="main-content">
+            <div class="panel">
+                <div class="tabs">
+                    <div class="tab active" data-tab="clock">Time Clock</div>
+                    <div class="tab" data-tab="employees">Employees</div>
+                </div>
+                
+                <div class="tab-content active" id="clockTab">
+                    <h2>Clock In/Out</h2>
+                    <div class="employee-info">
+                        <div class="input-group">
+                            <label for="employeeName">Employee Name</label>
+                            <input type="text" id="employeeName" placeholder="Enter your name">
+                        </div>
+                        <div class="input-group">
+                            <label for="employeeId">Employee ID</label>
+                            <input type="text" id="employeeId" placeholder="Enter your ID">
+                        </div>
+                        <div class="input-group">
+                            <label for="department">Department</label>
+                            <select id="department">
+                                <option value="">Select Department</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="HR">HR</option>
+                                <option value="Operations">Operations</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="clock-actions">
+                        <button class="clock-btn clock-in-btn" id="clockInBtn">
+                            <i>▶</i> Clock In
+                        </button>
+                        <button class="clock-btn clock-out-btn" id="clockOutBtn">
+                            <i>⏹</i> Clock Out
+                        </button>
+                    </div>
+                    
+                    <div class="status-indicator clocked-out" id="statusIndicator">
+                        Currently: Not Clocked In
+                    </div>
+                    
+                    <div class="location-info" id="locationInfo">
+                        Location: Not available
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="employeesTab">
+                    <h2>All Employees</h2>
+                    <div class="employee-list" id="employeeList">
+                        <!-- Employee list will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="history-section">
+                    <h2>Time History</h2>
+                    <div class="history-container">
+                        <table class="history-table" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Clock In</th>
+                                    <th>Clock Out</th>
+                                    <th>Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody">
+                                <!-- History rows will be added here -->
+                            </tbody>
+                        </table>
+                        <div class="empty-history" id="emptyHistory">
+                            No clock records yet. Clock in to get started!
+                        </div>
+                    </div>
+                    
+                    <button class="export-btn" id="exportBtn">Export to CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <h3>Share This App</h3>
+            <p>Share this link with employees to allow them to clock in/out:</p>
+            <div class="share-options">
+                <div class="share-link">
+                    <input type="text" id="shareLink" readonly>
+                    <button class="copy-btn" id="copyLinkBtn">Copy</button>
+                </div>
+            </div>
+            <button class="close-modal" id="closeModal">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const currentTimeEl = document.getElementById('currentTime');
+        const employeeNameEl = document.getElementById('employeeName');
+        const employeeIdEl = document.getElementById('employeeId');
+        const departmentEl = document.getElementById('department');
+        const clockInBtn = document.getElementById('clockInBtn');
+        const clockOutBtn = document.getElementById('clockOutBtn');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const locationInfo = document.getElementById('locationInfo');
+        const historyBody = document.getElementById('historyBody');
+        const emptyHistory = document.getElementById('emptyHistory');
+        const exportBtn = document.getElementById('exportBtn');
+        const shareAppBtn = document.getElementById('shareAppBtn');
+        const viewAllEmployeesBtn = document.getElementById('viewAllEmployeesBtn');
+        const shareModal = document.getElementById('shareModal');
+        const shareLink = document.getElementById('shareLink');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const closeModal = document.getElementById('closeModal');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const employeeList = document.getElementById('employeeList');
+        
+        // State variables
+        let isClockedIn = false;
+        let clockInTime = null;
+        let currentLocation = null;
+        let history = JSON.parse(localStorage.getItem('timeClockHistory')) || [];
+        let employees = JSON.parse(localStorage.getItem('timeClockEmployees')) || {};
+        
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour12: true, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            const dateString = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            currentTimeEl.textContent = `${dateString} | ${timeString}`;
+        }
+        
+        // Get current location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        currentLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        };
+                        locationInfo.textContent = `Location: ${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)}`;
+                    },
+                    (error) => {
+                        console.error("Error getting location:", error);
+                        locationInfo.textContent = "Location: Permission denied or unavailable";
+                    }
+                );
+            } else {
+                locationInfo.textContent = "Location: Geolocation not supported";
+            }
+        }
+        
+        // Format time for display
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', { 
+                hour12: true, 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+        
+        // Format date for display
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        }
+        
+        // Calculate duration between two times
+        function calculateDuration(start, end) {
+            const diffMs = end - start;
+            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return `${hours}h ${minutes}m`;
+        }
+        
+        // Update status indicator
+        function updateStatusIndicator() {
+            if (isClockedIn) {
+                statusIndicator.textContent = `Currently: Clocked In since ${formatTime(clockInTime)}`;
+                statusIndicator.className = 'status-indicator clocked-in';
+            } else {
+                statusIndicator.textContent = 'Currently: Not Clocked In';
+                statusIndicator.className = 'status-indicator clocked-out';
+            }
+        }
+        
+        // Update employee in the employees list
+        function updateEmployee(name, id, department, isClockedIn, time) {
+            if (!employees[id]) {
+                employees[id] = {
+                    name: name,
+                    id: id,
+                    department: department,
+                    isClockedIn: isClockedIn,
+                    lastClockIn: time,
+                    lastClockOut: null
+                };
+            } else {
+                employees[id].isClockedIn = isClockedIn;
+                if (isClockedIn) {
+                    employees[id].lastClockIn = time;
+                } else {
+                    employees[id].lastClockOut = time;
+                }
+            }
+            
+            localStorage.setItem('timeClockEmployees', JSON.stringify(employees));
+            renderEmployeeList();
+        }
+        
+        // Render employee list
+        function renderEmployeeList() {
+            if (Object.keys(employees).length === 0) {
+                employeeList.innerHTML = '<div class="empty-history">No employees have clocked in yet.</div>';
+                return;
+            }
+            
+            let employeeHTML = '';
+            for (const id in employees) {
+                const employee = employees[id];
+                employeeHTML += `
+                    <div class="employee-item">
+                        <div>
+                            <span class="employee-status ${employee.isClockedIn ? 'status-clocked-in' : 'status-clocked-out'}"></span>
+                            <strong>${employee.name}</strong> (${employee.id})
+                        </div>
+                        <div>
+                            <span>${employee.department}</span>
+                            <div style="font-size: 12px; color: #7f8c8d;">
+                                ${employee.isClockedIn ? 
+                                    `Clocked in at ${formatTime(new Date(employee.lastClockIn))}` : 
+                                    `Last clocked out at ${employee.lastClockOut ? formatTime(new Date(employee.lastClockOut)) : 'N/A'}`}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            employeeList.innerHTML = employeeHTML;
+        }
+        
+        // Render history table
+        function renderHistory() {
+            if (history.length === 0) {
+                emptyHistory.style.display = 'block';
+                historyBody.innerHTML = '';
+                return;
+            }
+            
+            emptyHistory.style.display = 'none';
+            
+            // Sort history by date (newest first)
+            const sortedHistory = [...history].sort((a, b) => new Date(b.clockIn) - new Date(a.clockIn));
+            
+            historyBody.innerHTML = sortedHistory.map(record => {
+                const clockIn = new Date(record.clockIn);
+                const clockOut = record.clockOut ? new Date(record.clockOut) : null;
+                const duration = clockOut ? calculateDuration(clockIn, clockOut) : 'In Progress';
+                const locationInfo = record.location ? 
+                    ` (${record.location.latitude.toFixed(2)}, ${record.location.longitude.toFixed(2)})` : '';
+                
+                return `
+                    <tr>
+                        <td>${record.employeeName}</td>
+                        <td>${formatDate(clockIn)}</td>
+                        <td>${formatTime(clockIn)}${locationInfo}</td>
+                        <td>${clockOut ? formatTime(clockOut) : '-'}</td>
+                        <td>${duration}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Clock in function
+        function clockIn() {
+            const name = employeeNameEl.value.trim();
+            const id = employeeIdEl.value.trim();
+            const department = departmentEl.value;
+            
+            if (!name || !id || !department) {
+                alert('Please enter your name, employee ID, and department');
+                return;
+            }
+            
+            isClockedIn = true;
+            clockInTime = new Date();
+            
+            // Add new record to history
+            history.push({
+                date: clockInTime.toISOString(),
+                clockIn: clockInTime.toISOString(),
+                clockOut: null,
+                employeeName: name,
+                employeeId: id,
+                department: department,
+                location: currentLocation
+            });
+            
+            // Update employee record
+            updateEmployee(name, id, department, true, clockInTime.toISOString());
+            
+            // Save to localStorage
+            localStorage.setItem('timeClockHistory', JSON.stringify(history));
+            
+            updateStatusIndicator();
+            renderHistory();
+            
+            alert(`Clocked in at ${formatTime(clockInTime)}`);
+        }
+        
+        // Clock out function
+        function clockOut() {
+            if (!isClockedIn) {
+                alert('You are not currently clocked in');
+                return;
+            }
+            
+            const name = employeeNameEl.value.trim();
+            const id = employeeIdEl.value.trim();
+            const department = departmentEl.value;
+            const clockOutTime = new Date();
+            
+            // Find the current clock-in record and update it
+            const currentRecord = history.find(record => 
+                record.employeeId === id && record.clockOut === null
+            );
+            
+            if (currentRecord) {
+                currentRecord.clockOut = clockOutTime.toISOString();
+                currentRecord.locationOut = currentLocation;
+            }
+            
+            isClockedIn = false;
+            clockInTime = null;
+            
+            // Update employee record
+            updateEmployee(name, id, department, false, clockOutTime.toISOString());
+            
+            // Save to localStorage
+            localStorage.setItem('timeClockHistory', JSON.stringify(history));
+            
+            updateStatusIndicator();
+            renderHistory();
+            
+            alert(`Clocked out at ${formatTime(clockOutTime)}`);
+        }
+        
+        // Export to CSV
+        function exportToCSV() {
+            if (history.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            const headers = ['Date', 'Employee Name', 'Employee ID', 'Department', 'Clock In', 'Clock Out', 'Duration', 'Location In', 'Location Out'];
+            const csvData = history.map(record => {
+                const clockIn = new Date(record.clockIn);
+                const clockOut = record.clockOut ? new Date(record.clockOut) : null;
+                const duration = clockOut ? calculateDuration(clockIn, clockOut) : 'In Progress';
+                const locationIn = record.location ? 
+                    `${record.location.latitude.toFixed(4)}, ${record.location.longitude.toFixed(4)}` : '';
+                const locationOut = record.locationOut ? 
+                    `${record.locationOut.latitude.toFixed(4)}, ${record.locationOut.longitude.toFixed(4)}` : '';
+                
+                return [
+                    formatDate(clockIn),
+                    record.employeeName,
+                    record.employeeId,
+                    record.department,
+                    formatTime(clockIn),
+                    clockOut ? formatTime(clockOut) : '',
+                    duration,
+                    locationIn,
+                    locationOut
+                ];
+            });
+            
+            const csvContent = [headers, ...csvData]
+                .map(row => row.map(cell => `"${cell}"`).join(','))
+                .join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `employee-time-clock-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Share app functionality
+        function shareApp() {
+            const appUrl = window.location.href;
+            shareLink.value = appUrl;
+            shareModal.style.display = 'flex';
+        }
+        
+        // Copy link to clipboard
+        function copyLink() {
+            shareLink.select();
+            document.execCommand('copy');
+            alert('Link copied to clipboard!');
+        }
+        
+        // Switch tabs
+        function switchTab(tabName) {
+            // Update tabs
+            tabs.forEach(tab => {
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Update tab contents
+            tabContents.forEach(content => {
+                if (content.id === `${tabName}Tab`) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+        
+        // Initialize the app
+        function init() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            getLocation();
+            
+            // Check if user is already clocked in
+            const activeRecord = history.find(record => record.clockOut === null);
+            if (activeRecord) {
+                isClockedIn = true;
+                clockInTime = new Date(activeRecord.clockIn);
+                employeeNameEl.value = activeRecord.employeeName;
+                employeeIdEl.value = activeRecord.employeeId;
+                departmentEl.value = activeRecord.department;
+            }
+            
+            updateStatusIndicator();
+            renderHistory();
+            renderEmployeeList();
+            
+            // Event listeners
+            clockInBtn.addEventListener('click', clockIn);
+            clockOutBtn.addEventListener('click', clockOut);
+            exportBtn.addEventListener('click', exportToCSV);
+            shareAppBtn.addEventListener('click', shareApp);
+            viewAllEmployeesBtn.addEventListener('click', () => switchTab('employees'));
+            copyLinkBtn.addEventListener('click', copyLink);
+            closeModal.addEventListener('click', () => {
+                shareModal.style.display = 'none';
+            });
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTab(tab.dataset.tab);
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === shareModal) {
+                    shareModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Start the application
+        init();
+    </script>
+</body>
+</html>
